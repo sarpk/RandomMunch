@@ -65,7 +65,7 @@ function createSelectIngredientsView() {
             fullscreen: true,
             url: 'edit_ingredients.js'
         });
-        window.title = 'Assignment 1';
+        window.title = 'Random Munchies';
         window.refreshIngredients = refreshIngredients;
         window.open();
     });
@@ -98,5 +98,5 @@ function constructMainView(_args) {
     return mainWin;
 };
 
-constructMainView({title: 'Assignment 1'}).open();
+constructMainView({title: 'Random Munchies'}).open();
 

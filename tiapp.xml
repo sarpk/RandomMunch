@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
-	<id>au.edu.usq.csc8420.sarp.a1</id>
-	<name>A1-SarpKaya</name>
+	<id>au.edu.usq.csc8420.sarp.a5.random.munchies</id>
+	<name>Random Munchies</name>
 	<version>1.0</version>
 	<publisher>not specified</publisher>
 	<url></url>
