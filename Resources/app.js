@@ -105,6 +105,28 @@ function getCurrentCoordinates() {
 
 }
 
+
+var client = Ti.Network.createHTTPClient({
+    // function called when the response data is available
+    onload: function (e) {
+        Ti.API.info("Received text: " + this.responseText);
+    },
+    // function called when an error occurs, including a timeout
+    onerror: function (e) {
+        Ti.API.debug(e.error);
+        alert('error');
+    },
+    timeout: 10000 // in milliseconds
+});
+
+function getRestaurants(lat, lon) {
+    var url = "https://developers.zomato.com/api/v2.1/search?lat=" + lat + "&lon=" + lon + "&radius=1000";
+
+    client.open("GET", url);
+
+    client.setRequestHeader('user-key', '0309287a5838e5' + '15f2c0a39b8143f17c');
+    client.send();
+}
 //End of Helper Function
 
 
@@ -126,6 +148,7 @@ function constructMainView(_args) {
     scrollView.add(createSelectIngredientsView());
     var coords = getCurrentCoordinates();
     console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
+    getRestaurants(coords.latitude, coords.longitude);
     return mainWin;
 };
 
