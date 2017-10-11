@@ -75,6 +75,36 @@ function createSelectIngredientsView() {
     return ingredientView;
 }
 
+function getCurrentCoordinates() {
+    //Set Brisbane lat and long
+    var latitude = -27.4633052;
+    var longitude = 153.0257628;
+
+    if (Ti.Network.online) {
+        Ti.Geolocation.purpose = "Receive User Location";
+        Titanium.Geolocation.getCurrentPosition(function (e) {
+
+            if (!e.success || e.error) {
+                console.log('Could not find the device location');
+                console.log("Defaulting latitude: " + latitude + " and longitude: " + longitude);
+                return;
+            }
+            longitude = e.coords.longitude;
+            latitude = e.coords.latitude;
+
+            console.log("Found latitude: " + latitude + " and longitude: " + longitude);
+
+        });
+    } else {
+        console.log("Internet connection is required for geolocation");
+        console.log("Defaulting latitude: " + latitude + " and longitude: " + longitude);
+    }
+
+    console.log("Returning latitude: " + latitude + " and longitude: " + longitude);
+    return {latitude: latitude, longitude: longitude};
+
+}
+
 //End of Helper Function
 
 
@@ -94,9 +124,9 @@ function constructMainView(_args) {
     scrollView.add(addOpenCategoryDialog(constructButton(510, 'Select a Category')));
 
     scrollView.add(createSelectIngredientsView());
-
+    var coords = getCurrentCoordinates();
+    console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
     return mainWin;
 };
 
 constructMainView({title: 'Random Munchies'}).open();
-
