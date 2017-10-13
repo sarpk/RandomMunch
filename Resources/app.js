@@ -136,7 +136,13 @@ function initDb() {
     db.execute('CREATE TABLE IF NOT EXISTS LIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);');
     db.execute('CREATE TABLE IF NOT EXISTS DISLIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);');
     db.execute('CREATE TABLE IF NOT EXISTS SETTINGS(id INTEGER PRIMARY KEY, notificationSeconds INTEGER);');
+try{
     db.execute('INSERT INTO SETTINGS (id,notificationSeconds) VALUES (?,?)', 1, 3600);
+}
+catch(e){
+    //Already inserted ignore
+}
+
 
     db.close();
 
@@ -224,6 +230,18 @@ function addLikedRestaurant(id, name) {
     db.close();
 }
 
+function addNotification() {
+    var intent = Ti.Android.createServiceIntent({
+        url : 'ExampleService.js'
+    });
+    intent.putExtra('title' , 'Eatery Feedback');
+    intent.putExtra('message' , 'Did you enjoy your food?');
+    intent.putExtra('timestamp', new Date(new Date().getTime() + 20 * 1000));
+    intent.putExtra('interval', 10000);
+    Ti.Android.startService(intent);
+
+}
+
 //End of Helper Function
 
 
@@ -246,6 +264,8 @@ function constructMainView(_args) {
     var coords = getCurrentCoordinates();
     console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
     getRestaurants(coords.latitude, coords.longitude);
+
+addNotification();
 
     return mainWin;
 };
