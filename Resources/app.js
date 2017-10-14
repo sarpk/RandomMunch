@@ -243,25 +243,48 @@ function addNotification() {
 }
 
 
-function displayEatery(win, name, address, distance, cuisine, rating, avgPrice) {
+function displayEatery(win, baseTop, name, address, distance, cuisine, rating, avgPrice) {
 
-    win.add(constructLabel(30, 'Name:', 'left'));
-    win.add(constructLabel(30, name, 'right'));
+    win.add(constructLabel(baseTop, 'Name:', 'left'));
+    win.add(constructLabel(baseTop, name, 'right'));
 
-    win.add(constructLabel(50, 'Address:', 'left'));
-    win.add(constructLabel(50, address, 'right'));
+    win.add(constructLabel(baseTop+20, 'Address:', 'left'));
+    win.add(constructLabel(baseTop+20, address, 'right'));
 
-    win.add(constructLabel(70, 'Distance:', 'left'));
-    win.add(constructLabel(70, distance, 'right'));
+    win.add(constructLabel(baseTop+40, 'Distance:', 'left'));
+    win.add(constructLabel(baseTop+40, distance, 'right'));
 
-    win.add(constructLabel(90, 'Cuisine:', 'left'));
-    win.add(constructLabel(90, cuisine, 'right'));
+    win.add(constructLabel(baseTop+60, 'Cuisine:', 'left'));
+    win.add(constructLabel(baseTop+60, cuisine, 'right'));
 
-    win.add(constructLabel(110, 'Rating:', 'left'));
-    win.add(constructLabel(110, rating, 'right'));
+    win.add(constructLabel(baseTop+80, 'Rating:', 'left'));
+    win.add(constructLabel(baseTop+80, rating, 'right'));
 
-    win.add(constructLabel(130, 'Avg Price:', 'left'));
-    win.add(constructLabel(130, avgPrice, 'right'));
+    win.add(constructLabel(baseTop+100, 'Avg Price:', 'left'));
+    win.add(constructLabel(baseTop+100, avgPrice, 'right'));
+
+}
+
+function setLikeButtons(win, topVal) {
+likeBut = Titanium.UI.createButton({
+        height: 75,
+        width: 75,
+	left: '20%',
+    backgroundImage:"like_btn.png",
+        top: topVal
+    });
+
+win.add(likeBut);
+
+dislikeBut = Titanium.UI.createButton({
+        height: 75,
+        width: 75,
+	right: '20%',
+    backgroundImage:"dislike_btn.png",
+        top: topVal
+    });
+
+win.add(dislikeBut);
 
 }
 
@@ -275,9 +298,11 @@ function constructMainView(_args) {
 
     mainWin.add(constructLabel(10, 'Found a place to eat:', 'center'));
 
-    displayEatery(mainWin, 'Korilla', 'Valley', '1km', 'Korean', '3', '$30');
+    displayEatery(mainWin, 30, 'Korilla', 'Valley', '1km', 'Korean', '3', '$30');
 
-    var scrollView = constructScrollView(0);
+    setLikeButtons(mainWin, 180);
+
+    var scrollView = constructScrollView(200);
 
     mainWin.add(scrollView);
 
