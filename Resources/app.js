@@ -106,22 +106,76 @@ function getCurrentCoordinates() {
 
 }
 
+var eateries = [];
+
+
+function displayEatery(passedWin) {
+
+    var win = Titanium.UI.currentWindow;
+if (eateries.length == 0) {
+    win.add(constructLabel(10, 'Could not find any eatery', 'center'));
+}
+    console.log("Will display info");
+    console.log("Addr is" + eateries[0].location.address);
+
+
+   win.add(constructLabel(180, 'Address:', 'left'));
+    win.add(constructLabel(180, eateries[0].location.address, 'right'));
+
+    console.log("Name is" + eateries[0][name]);
+
+
+
+    displayEatery(win, 30, 
+eateries[0][name],
+eateries[0].location.address,
+eateries[0].location.latitude,
+eateries[0].cuisines,
+eateries[0].user_rating.aggregate_rating,
+eateries[0].average_cost_for_two
+);
+
+}
+
+function getRestaurants(lat, lon, win) {
+    var url = "https://developers.zomato.com/api/v2.1/geocode?lat=" + lat + "&lon=" + lon;
+
+var eateryHandler = function(e) {
+    try {
+	response = JSON.parse(this.responseText);
+if (response.nearby_restaurants instanceof Array) {
+eateries = response.nearby_restaurants;
+
+        Ti.API.info("Restaurants are: " + response.nearby_restaurants);
+eateries.forEach(function(entry) {
+    console.log(entry);
+    console.log("name1 is " + entry[name]);
+    console.log("name is " + entry.name);
+});
+
+displayEatery(win);
+}
+
+
+    }
+    catch (err) { //An error occurred regarding to response
+      Ti.API.debug(err);
+        alert('Could not gather eateries around, please try again later');
+    }
+
+    };
+
+
 
 var client = Ti.Network.createHTTPClient({
-    // function called when the response data is available
-    onload: function (e) {
-        Ti.API.info("Received text: " + this.responseText);
-    },
-    // function called when an error occurs, including a timeout
-    onerror: function (e) {
+    onload: eateryHandler, //Handling eateries
+    onerror: function (e) { //Handling Error
         Ti.API.debug(e.error);
-        alert('error');
+        alert('Could not gather eateries around, please try again later');
     },
     timeout: 10000 // in milliseconds
 });
 
-function getRestaurants(lat, lon) {
-    var url = "https://developers.zomato.com/api/v2.1/search?lat=" + lat + "&lon=" + lon + "&radius=1000";
 
     client.open("GET", url);
 
@@ -143,6 +197,8 @@ function addNotification() {
 
 
 function displayEatery(win, baseTop, name, address, distance, cuisine, rating, avgPrice) {
+
+    win.add(constructLabel(baseTop-20, 'Found a place to eat:', 'center'));
 
     win.add(constructLabel(baseTop, 'Name:', 'left'));
     win.add(constructLabel(baseTop, name, 'right'));
@@ -195,9 +251,7 @@ function constructMainView(_args) {
         title: _args.title
     });
 
-    mainWin.add(constructLabel(10, 'Found a place to eat:', 'center'));
-
-    displayEatery(mainWin, 30, 'Korilla', 'Valley', '1km', 'Korean', '3', '$30');
+//    displayEatery(mainWin, 30, 'Korilla', 'Valley', '1km', 'Korean', '3', '$30');
 
     setLikeButtons(mainWin, 180);
 
@@ -212,7 +266,7 @@ function constructMainView(_args) {
     scrollView.add(createSelectIngredientsView());
     var coords = getCurrentCoordinates();
     console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
-    getRestaurants(coords.latitude, coords.longitude);
+    getRestaurants(coords.latitude, coords.longitude, mainWin);
 
     addNotification();
 
