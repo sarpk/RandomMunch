@@ -3,7 +3,7 @@ Ti.include('common.js');
 function edit_ingredients() {
     var currentWin = Titanium.UI.currentWindow;
 
-    currentWin.add(constructLabel(10, 'Edit List of Ingredients:'));
+    currentWin.add(constructLabel(10, 'Edit List of Ingredients:', 'center'));
 
     var ingredientTableView = constructTableView(50);
     var tableRow = prepTableRow(Ti.App.ingredientList);

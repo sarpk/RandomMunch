@@ -34,7 +34,7 @@ function createSelectIngredientsView() {
         width: 250
     });
 
-    ingredientView.add(constructLabel(10, 'Select Ingredients:'));
+    ingredientView.add(constructLabel(10, 'Select Ingredients:', 'center'));
 
     // create table view
     var ingredientTable = constructTableView(50);
@@ -136,12 +136,12 @@ function initDb() {
     db.execute('CREATE TABLE IF NOT EXISTS LIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);');
     db.execute('CREATE TABLE IF NOT EXISTS DISLIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);');
     db.execute('CREATE TABLE IF NOT EXISTS SETTINGS(id INTEGER PRIMARY KEY, notificationSeconds INTEGER);');
-try{
-    db.execute('INSERT INTO SETTINGS (id,notificationSeconds) VALUES (?,?)', 1, 3600);
-}
-catch(e){
-    //Already inserted ignore
-}
+    try {
+        db.execute('INSERT INTO SETTINGS (id,notificationSeconds) VALUES (?,?)', 1, 3600);
+    }
+    catch (e) {
+        //Primary key error, suppress it
+    }
 
 
     db.close();
@@ -232,13 +232,36 @@ function addLikedRestaurant(id, name) {
 
 function addNotification() {
     var intent = Ti.Android.createServiceIntent({
-        url : 'ExampleService.js'
+        url: 'ExampleService.js'
     });
-    intent.putExtra('title' , 'Eatery Feedback');
-    intent.putExtra('message' , 'Did you enjoy your food?');
+    intent.putExtra('title', 'Eatery Feedback');
+    intent.putExtra('message', 'Did you enjoy your food?');
     intent.putExtra('timestamp', new Date(new Date().getTime() + 20 * 1000));
     intent.putExtra('interval', 10000);
     Ti.Android.startService(intent);
+
+}
+
+
+function displayEatery(win, name, address, distance, cuisine, rating, avgPrice) {
+
+    win.add(constructLabel(20, 'Name:', 'left'));
+    win.add(constructLabel(20, name, 'right'));
+
+    win.add(constructLabel(30, 'Address:', 'left'));
+    win.add(constructLabel(30, address, 'right'));
+
+    win.add(constructLabel(40, 'Distance:', 'left'));
+    win.add(constructLabel(40, distance, 'right'));
+
+    win.add(constructLabel(50, 'Cuisine:', 'left'));
+    win.add(constructLabel(50, cuisine, 'right'));
+
+    win.add(constructLabel(60, 'Rating:', 'left'));
+    win.add(constructLabel(60, rating, 'right'));
+
+    win.add(constructLabel(70, 'Avg Price:', 'left'));
+    win.add(constructLabel(70, avgPrice, 'right'));
 
 }
 
@@ -249,6 +272,10 @@ function constructMainView(_args) {
     var mainWin = Titanium.UI.createWindow({
         title: _args.title
     });
+
+    mainWin.add(constructLabel(10, 'Found a place to eat:', 'center'));
+
+    displayEatery(mainWin, 'Korilla', 'Valley', '1km', 'Korean', '3', '$30');
 
     var scrollView = constructScrollView(0);
 
@@ -265,7 +292,7 @@ function constructMainView(_args) {
     console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
     getRestaurants(coords.latitude, coords.longitude);
 
-addNotification();
+    addNotification();
 
     return mainWin;
 };

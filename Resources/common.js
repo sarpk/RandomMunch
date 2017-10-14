@@ -73,13 +73,13 @@ function addOpenCategoryDialog(button) {
     return button;
 }
 
-function constructLabel(topVal, textVal) {
+function constructLabel(topVal, textVal, align) {
     return Titanium.UI.createLabel({
         color: '#999',
         top: topVal,
         text: textVal,
         font: {fontSize: 20, fontFamily: 'Helvetica Neue'},
-        textAlign: 'center',
+        textAlign: align,
         height: 'auto',
         width: 'auto'
     });
