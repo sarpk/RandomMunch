@@ -81,7 +81,7 @@ function constructLabel(topVal, textVal, align) {
         font: {fontSize: 20, fontFamily: 'Helvetica Neue'},
         textAlign: align,
         height: 'auto',
-        width: 'auto'
+        width: Ti.Platform.displayCaps.platformWidth
     });
 }
 

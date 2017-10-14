@@ -245,23 +245,23 @@ function addNotification() {
 
 function displayEatery(win, name, address, distance, cuisine, rating, avgPrice) {
 
-    win.add(constructLabel(20, 'Name:', 'left'));
-    win.add(constructLabel(20, name, 'right'));
+    win.add(constructLabel(30, 'Name:', 'left'));
+    win.add(constructLabel(30, name, 'right'));
 
-    win.add(constructLabel(30, 'Address:', 'left'));
-    win.add(constructLabel(30, address, 'right'));
+    win.add(constructLabel(50, 'Address:', 'left'));
+    win.add(constructLabel(50, address, 'right'));
 
-    win.add(constructLabel(40, 'Distance:', 'left'));
-    win.add(constructLabel(40, distance, 'right'));
+    win.add(constructLabel(70, 'Distance:', 'left'));
+    win.add(constructLabel(70, distance, 'right'));
 
-    win.add(constructLabel(50, 'Cuisine:', 'left'));
-    win.add(constructLabel(50, cuisine, 'right'));
+    win.add(constructLabel(90, 'Cuisine:', 'left'));
+    win.add(constructLabel(90, cuisine, 'right'));
 
-    win.add(constructLabel(60, 'Rating:', 'left'));
-    win.add(constructLabel(60, rating, 'right'));
+    win.add(constructLabel(110, 'Rating:', 'left'));
+    win.add(constructLabel(110, rating, 'right'));
 
-    win.add(constructLabel(70, 'Avg Price:', 'left'));
-    win.add(constructLabel(70, avgPrice, 'right'));
+    win.add(constructLabel(130, 'Avg Price:', 'left'));
+    win.add(constructLabel(130, avgPrice, 'right'));
 
 }
 
@@ -280,8 +280,6 @@ function constructMainView(_args) {
     var scrollView = constructScrollView(0);
 
     mainWin.add(scrollView);
-
-    scrollView.add(datePickerInit(10));
 
     scrollView.add(constructTextField(470, 'Recipe Name'));
 
