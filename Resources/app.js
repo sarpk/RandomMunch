@@ -1,4 +1,5 @@
 Ti.include('common.js');
+Ti.include('db.js');
 
 // Define Globals
 
@@ -128,108 +129,6 @@ function getRestaurants(lat, lon) {
     client.send();
 }
 
-
-function initDb() {
-
-    Ti.Database.install('/dbname.sqlite', 'randomMunchDb');
-    var db = Ti.Database.open('randomMunchDb');
-    db.execute('CREATE TABLE IF NOT EXISTS LIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);');
-    db.execute('CREATE TABLE IF NOT EXISTS DISLIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);');
-    db.execute('CREATE TABLE IF NOT EXISTS SETTINGS(id INTEGER PRIMARY KEY, notificationSeconds INTEGER);');
-    try {
-        db.execute('INSERT INTO SETTINGS (id,notificationSeconds) VALUES (?,?)', 1, 3600);
-    }
-    catch (e) {
-        //Primary key error, suppress it
-    }
-
-
-    db.close();
-
-}
-
-function updateNotificationSecond(seconds) {
-    var db = Ti.Database.open('randomMunchDb');
-    db.execute('UPDATE SETTINGS SET notificationSeconds = ? WHERE id = 1', seconds);
-    db.close();
-}
-
-function getNotificationSecond() {
-    var db = Ti.Database.open('randomMunchDb');
-
-    var sql = "SELECT notificationSeconds FROM SETTINGS WHERE id = 1";
-    var RS = db.execute(sql);
-
-    var retVal = 3600;
-    while (RS.isValidRow()) {
-        retVal = RS.fieldByName('notificationSeconds');
-        RS.next();
-    }
-    RS.close();
-
-    return retVal;
-}
-
-function getLikedRestaurants() {
-
-    var db = Ti.Database.open('randomMunchDb');
-
-    var sql = "SELECT * FROM LIKED_RESTAURANTS";
-    var RS = db.execute(sql);
-
-
-    var retVal = [];
-    while (RS.isValidRow()) {
-        retVal.push({id: RS.fieldByName('id'), name: RS.fieldByName('name')});
-        RS.next();
-    }
-    RS.close();
-
-    return retVal;
-}
-
-function getDislikedRestaurants() {
-
-    var db = Ti.Database.open('randomMunchDb');
-
-    var sql = "SELECT * FROM DISLIKED_RESTAURANTS";
-    var RS = db.execute(sql);
-
-
-    var retVal = [];
-    while (RS.isValidRow()) {
-        retVal.push({id: RS.fieldByName('id'), name: RS.fieldByName('name')});
-        RS.next();
-    }
-    RS.close();
-
-    return retVal;
-}
-
-function deleteDislikedRestaurant(id) {
-    var db = Ti.Database.open('randomMunchDb');
-    db.execute('DELETE FROM DISLIKED_RESTAURANTS WHERE id=?', id);
-    db.close();
-}
-
-function deleteLikedRestaurant(id) {
-    var db = Ti.Database.open('randomMunchDb');
-    db.execute('DELETE FROM LIKED_RESTAURANTS WHERE id=?', id);
-    db.close();
-}
-
-function addDislikedRestaurant(id, name) {
-    var db = Ti.Database.open('randomMunchDb');
-    db.execute('INSERT INTO DISLIKED_RESTAURANTS (id,name) VALUES (?,?)', id, name);
-    db.close();
-}
-
-function addLikedRestaurant(id, name) {
-    var db = Ti.Database.open('randomMunchDb');
-    db.execute('INSERT INTO LIKED_RESTAURANTS (id,name) VALUES (?,?)', id, name);
-    db.close();
-}
-
 function addNotification() {
     var intent = Ti.Android.createServiceIntent({
         url: 'ExampleService.js'
@@ -248,43 +147,43 @@ function displayEatery(win, baseTop, name, address, distance, cuisine, rating, a
     win.add(constructLabel(baseTop, 'Name:', 'left'));
     win.add(constructLabel(baseTop, name, 'right'));
 
-    win.add(constructLabel(baseTop+20, 'Address:', 'left'));
-    win.add(constructLabel(baseTop+20, address, 'right'));
+    win.add(constructLabel(baseTop + 20, 'Address:', 'left'));
+    win.add(constructLabel(baseTop + 20, address, 'right'));
 
-    win.add(constructLabel(baseTop+40, 'Distance:', 'left'));
-    win.add(constructLabel(baseTop+40, distance, 'right'));
+    win.add(constructLabel(baseTop + 40, 'Distance:', 'left'));
+    win.add(constructLabel(baseTop + 40, distance, 'right'));
 
-    win.add(constructLabel(baseTop+60, 'Cuisine:', 'left'));
-    win.add(constructLabel(baseTop+60, cuisine, 'right'));
+    win.add(constructLabel(baseTop + 60, 'Cuisine:', 'left'));
+    win.add(constructLabel(baseTop + 60, cuisine, 'right'));
 
-    win.add(constructLabel(baseTop+80, 'Rating:', 'left'));
-    win.add(constructLabel(baseTop+80, rating, 'right'));
+    win.add(constructLabel(baseTop + 80, 'Rating:', 'left'));
+    win.add(constructLabel(baseTop + 80, rating, 'right'));
 
-    win.add(constructLabel(baseTop+100, 'Avg Price:', 'left'));
-    win.add(constructLabel(baseTop+100, avgPrice, 'right'));
+    win.add(constructLabel(baseTop + 100, 'Avg Price:', 'left'));
+    win.add(constructLabel(baseTop + 100, avgPrice, 'right'));
 
 }
 
 function setLikeButtons(win, topVal) {
-likeBut = Titanium.UI.createButton({
+    likeBut = Titanium.UI.createButton({
         height: 75,
         width: 75,
-	left: '20%',
-    backgroundImage:"like_btn.png",
+        left: '20%',
+        backgroundImage: "like_btn.png",
         top: topVal
     });
 
-win.add(likeBut);
+    win.add(likeBut);
 
-dislikeBut = Titanium.UI.createButton({
+    dislikeBut = Titanium.UI.createButton({
         height: 75,
         width: 75,
-	right: '20%',
-    backgroundImage:"dislike_btn.png",
+        right: '20%',
+        backgroundImage: "dislike_btn.png",
         top: topVal
     });
 
-win.add(dislikeBut);
+    win.add(dislikeBut);
 
 }
 
