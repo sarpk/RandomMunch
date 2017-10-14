@@ -109,35 +109,25 @@ function getCurrentCoordinates() {
 var eateries = [];
 
 
-function displayEatery(passedWin) {
-
-    var win = Titanium.UI.currentWindow;
+function handleEatery(win) {
     if (eateries.length == 0) {
+    	console.log("No eatery found");
         win.add(constructLabel(10, 'Could not find any eatery', 'center'));
     }
     var eatery = eateries[0].restaurant;
-    console.log("Will display info");
-    console.log("Addr is" + eatery.location.address);
-
-
-    win.add(constructLabel(180, 'Address:', 'left'));
-    win.add(constructLabel(180, eatery.location.address, 'right'));
-
-    console.log("Name is" + eatery[name]);
-
 
     displayEatery(win, 30,
-        eatery[name],
+        eatery.name,
         eatery.location.address,
         eatery.location.latitude,
         eatery.cuisines,
-        eatery.user_rating.aggregate_rating,
-        eatery.average_cost_for_two
+        eatery.user_rating.aggregate_rating + '/5',
+        eatery.currency + eatery.average_cost_for_two/2 + ' per person'
     );
 
 }
 
-function getRestaurants(lat, lon, win) {
+function getRestaurants(lat, lon, currWin) {
     var url = "https://developers.zomato.com/api/v2.1/geocode?lat=" + lat + "&lon=" + lon;
 
     var eateryHandler = function (e) {
@@ -150,8 +140,7 @@ function getRestaurants(lat, lon, win) {
                 eateries.forEach(function (entry) {
                     console.log(entry);
                 });
-                console.log("Will show first eatery now");
-                displayEatery(win);
+                handleEatery(currWin);
             }
 
 
