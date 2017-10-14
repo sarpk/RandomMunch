@@ -74,6 +74,10 @@ function addOpenCategoryDialog(button) {
 }
 
 function constructLabel(topVal, textVal, align) {
+return constructLabelWithWidth(topVal, textVal, align, Ti.Platform.displayCaps.platformWidth);
+}
+
+function constructLabelWithWidth(topVal, textVal, align, textWidth) {
     return Titanium.UI.createLabel({
         color: '#999',
         top: topVal,
@@ -81,7 +85,7 @@ function constructLabel(topVal, textVal, align) {
         font: {fontSize: 20, fontFamily: 'Helvetica Neue'},
         textAlign: align,
         height: 'auto',
-        width: Ti.Platform.displayCaps.platformWidth
+        width: textWidth
     });
 }
 

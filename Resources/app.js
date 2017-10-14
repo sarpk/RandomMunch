@@ -112,7 +112,9 @@ var eateries = [];
 function handleEatery(win) {
     if (eateries.length == 0) {
     	console.log("No eatery found");
-        win.add(constructLabel(10, 'Could not find any eatery', 'center'));
+    win.removeAllChildren();
+        win.add(constructLabel(10, 'Could not find any eatery :(', 'center'));
+return;
     }
     var eatery = eateries[0].restaurant;
 
@@ -181,36 +183,41 @@ function addNotification() {
 
 }
 
+function displayEatery(mainWin, baseTop, name, address, distance, cuisine, rating, avgPrice) {
 
-function displayEatery(win, baseTop, name, address, distance, cuisine, rating, avgPrice) {
+    var win = constructScrollView(0); //Use this for easy replacement
 
-    win.add(constructLabel(baseTop - 20, 'Found a place to eat:', 'center'));
+    win.add(constructLabel(baseTop, 'Found a place to eat:', 'center'));
 
-    win.add(constructLabel(baseTop, 'Name:', 'left'));
-    win.add(constructLabel(baseTop, name, 'right'));
+    win.add(constructLabel(baseTop + 30, 'Name:', 'left'));
+    win.add(constructLabel(baseTop + 30, name, 'right'));
 
-    win.add(constructLabel(baseTop + 20, 'Address:', 'left'));
-    win.add(constructLabel(baseTop + 20, address, 'right'));
+    win.add(constructLabel(baseTop + 55, 'Distance:', 'left'));
+    win.add(constructLabel(baseTop + 55, distance, 'right'));
 
-    win.add(constructLabel(baseTop + 40, 'Distance:', 'left'));
-    win.add(constructLabel(baseTop + 40, distance, 'right'));
+    win.add(constructLabel(baseTop + 80, 'Cuisine:', 'left'));
+    win.add(constructLabel(baseTop + 80, cuisine, 'right'));
 
-    win.add(constructLabel(baseTop + 60, 'Cuisine:', 'left'));
-    win.add(constructLabel(baseTop + 60, cuisine, 'right'));
+    win.add(constructLabel(baseTop + 105, 'Rating:', 'left'));
+    win.add(constructLabel(baseTop + 105, rating, 'right'));
 
-    win.add(constructLabel(baseTop + 80, 'Rating:', 'left'));
-    win.add(constructLabel(baseTop + 80, rating, 'right'));
+    win.add(constructLabel(baseTop + 130, 'Avg Price:', 'left'));
+    win.add(constructLabel(baseTop + 130, avgPrice, 'right'));
 
-    win.add(constructLabel(baseTop + 100, 'Avg Price:', 'left'));
-    win.add(constructLabel(baseTop + 100, avgPrice, 'right'));
+    win.add(constructLabel(baseTop + 155, 'Address:', 'left'));
+    win.add(constructLabelWithWidth(baseTop + 155, address, 'right', '80%'));
 
+    setLikeButtons(win, baseTop + 240);
+    mainWin.removeAllChildren(); //Unfortunately works really slow due to https://jira.appcelerator.org/browse/TIMOB-23447
+
+	mainWin.add(win);
 }
 
 function setLikeButtons(win, topVal) {
     likeBut = Titanium.UI.createButton({
         height: 75,
         width: 75,
-        left: '20%',
+        right: '20%',
         backgroundImage: "like_btn.png",
         top: topVal
     });
@@ -220,9 +227,14 @@ function setLikeButtons(win, topVal) {
     dislikeBut = Titanium.UI.createButton({
         height: 75,
         width: 75,
-        right: '20%',
+        left: '20%',
         backgroundImage: "dislike_btn.png",
         top: topVal
+    });
+    dislikeBut.addEventListener('click', function (e) {
+	addDislikedRestaurant(eateries[0].restaurant.id, eateries[0].restaurant.name); 
+        eateries.splice(0, 1);
+	handleEatery(win);
     });
 
     win.add(dislikeBut);
@@ -237,9 +249,9 @@ function constructMainView(_args) {
         title: _args.title
     });
 
-//    displayEatery(mainWin, 30, 'Korilla', 'Valley', '1km', 'Korean', '3', '$30');
 
-    setLikeButtons(mainWin, 180);
+
+    mainWin.add(constructLabel(40, 'Please wait while finding new eateries', 'center'));
 
     var scrollView = constructScrollView(200);
 
