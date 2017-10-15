@@ -111,10 +111,10 @@ var eateries = [];
 
 function handleEatery(win) {
     if (eateries.length == 0) {
-    	console.log("No eatery found");
-    win.removeAllChildren();
+        console.log("No eatery found");
+        win.removeAllChildren();
         win.add(constructLabel(10, 'Could not find any eatery :(', 'center'));
-return;
+        return;
     }
     var eatery = eateries[0].restaurant;
 
@@ -124,7 +124,7 @@ return;
         eatery.location.latitude,
         eatery.cuisines,
         eatery.user_rating.aggregate_rating + '/5',
-        eatery.currency + eatery.average_cost_for_two/2 + ' per person'
+        eatery.currency + eatery.average_cost_for_two / 2 + ' per person'
     );
 
 }
@@ -210,7 +210,7 @@ function displayEatery(mainWin, baseTop, name, address, distance, cuisine, ratin
     setLikeButtons(win, baseTop + 240);
     mainWin.removeAllChildren(); //Unfortunately works really slow due to https://jira.appcelerator.org/browse/TIMOB-23447
 
-	mainWin.add(win);
+    mainWin.add(win);
 }
 
 function setLikeButtons(win, topVal) {
@@ -232,9 +232,9 @@ function setLikeButtons(win, topVal) {
         top: topVal
     });
     dislikeBut.addEventListener('click', function (e) {
-	addDislikedRestaurant(eateries[0].restaurant.id, eateries[0].restaurant.name); 
+        addDislikedRestaurant(eateries[0].restaurant.id, eateries[0].restaurant.name);
         eateries.splice(0, 1);
-	handleEatery(win);
+        handleEatery(win);
     });
 
     win.add(dislikeBut);
@@ -250,17 +250,24 @@ function constructMainView(_args) {
     });
 
 
-mainWin.activity.onCreateOptionsMenu = function(e) {
-            var menu = e.menu;
+    mainWin.activity.onCreateOptionsMenu = function (e) {
+        var menu = e.menu;
         var menuItem = menu.add({
-            title : "Settings",
-		icon : Ti.Android.R.drawable.ic_menu_preferences,
-		showAsAction: Ti.Android.SHOW_AS_ACTION_ALWAYS
+            title: "Settings",
+            icon: Ti.Android.R.drawable.ic_menu_preferences,
+            showAsAction: Ti.Android.SHOW_AS_ACTION_ALWAYS
         });
-        menuItem.addEventListener("click", function(e) {
-    console.log("Clicked button " + e.source.title);
+        menuItem.addEventListener("click", function (e) {
+            console.log("Clicked button " + e.source.title);
+            var window = Ti.UI.createWindow({
+                fullscreen: true,
+                url: 'edit_ingredients.js'
+            });
+            window.title = 'Random Munchies';
+            window.refreshIngredients = refreshIngredients;
+            window.open();
         });
-};
+    };
 
     mainWin.add(constructLabel(40, 'Please wait while finding new eateries', 'center'));
 

@@ -1,4 +1,6 @@
 Ti.include('common.js');
+Ti.include('db.js');
+
 
 function edit_ingredients() {
     var currentWin = Titanium.UI.currentWindow;
