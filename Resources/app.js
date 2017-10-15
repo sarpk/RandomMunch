@@ -112,6 +112,7 @@ function eateryInfoParse(eatery) {
     var ratingStr = eatery.user_rating.aggregate_rating + '/5';
     var avgCostStr = eatery.currency + eatery.average_cost_for_two / 2 + ' per person';
     var retVal = {
+        id: eatery.id,
         name: eatery.name,
         address: eatery.location.address,
         distance: eatery.location.latitude,
@@ -127,6 +128,7 @@ function handleEatery(win) {
         console.log("No eatery found");
         win.removeAllChildren();
         win.add(constructLabel(10, 'Could not find any eatery :(', 'center'));
+        setTryAgainButton(win);
         return;
     }
     var eatery = eateryInfoParse(eateries[0].restaurant);
@@ -161,6 +163,140 @@ function registerForNotificationCallbacks(win) {
     });
     Ti.Android.registerBroadcastReceiver(broadcastReceiver, ['au.edu.usq.csc8420.sarp.a5.random.munchies.FEEDBACK']);
 
+}
+
+
+function displayEatery(mainWin, baseTop, purpose, eatery) {
+
+    var win = constructScrollView(0); //Use this for easy replacement
+    if (purpose == 'mainDisplay') {
+        win.add(constructLabel(baseTop, 'Found a place to eat:', 'center'));
+    }
+    if (purpose == 'approval') {
+        win.add(constructLabel(baseTop, 'Going to the eatery!', 'center'));
+        var secondMsg = 'You will be asked ' + getNotificationSecond() + ' seconds later';
+        win.add(constructLabel(baseTop + 30, secondMsg, 'center'));
+        win.add(constructLabel(baseTop + 60, 'whether you liked the eatery', 'center'));
+        baseTop += 60;
+    }
+    if (purpose == 'feedback') {
+        win.add(constructLabel(baseTop, 'Did you like this place?', 'center'));
+    }
+    if (purpose == 'feedbackLike') {
+        win.add(constructLabel(baseTop, 'Liked the place!', 'center'));
+        win.add(constructLabel(baseTop + 30, 'Thank you for your feedback!', 'center'));
+        win.add(constructLabel(baseTop + 60, 'This eatery will be shown again', 'center'));
+        baseTop += 60;
+    }
+    if (purpose == 'feedbackDislike') {
+        win.add(constructLabel(baseTop, 'Disliked the place!', 'center'));
+        win.add(constructLabel(baseTop + 30, 'Thank you for your feedback!', 'center'));
+        win.add(constructLabel(baseTop + 60, 'Sorry to hear that!', 'center'));
+        win.add(constructLabel(baseTop + 90, "You won't see this place again", 'center'));
+        baseTop += 90;
+    }
+
+    win.add(constructLabel(baseTop + 30, 'Name:', 'left'));
+    win.add(constructLabel(baseTop + 30, eatery.name, 'right'));
+
+    win.add(constructLabel(baseTop + 55, 'Distance:', 'left'));
+    win.add(constructLabel(baseTop + 55, eatery.distance, 'right'));
+
+    win.add(constructLabel(baseTop + 80, 'Cuisine:', 'left'));
+    win.add(constructLabel(baseTop + 80, eatery.cuisines, 'right'));
+
+    win.add(constructLabel(baseTop + 105, 'Rating:', 'left'));
+    win.add(constructLabel(baseTop + 105, eatery.rating, 'right'));
+
+    win.add(constructLabel(baseTop + 130, 'Avg Price:', 'left'));
+    win.add(constructLabel(baseTop + 130, eatery.cost, 'right'));
+
+    win.add(constructLabel(baseTop + 155, 'Address:', 'left'));
+    win.add(constructLabelToRight(baseTop + 155, eatery.address, '80%'));
+
+    if (purpose == 'mainDisplay') {
+        setLikeButtons(win, baseTop + 240);
+    }
+    if (purpose == 'feedback') {
+        setFeedbackButtons(eatery, win, baseTop + 240);
+    }
+    if (purpose == 'feedbackLike' || purpose == 'feedbackDislike') {
+        setPickAnother(win, mainWin);
+    }
+
+    mainWin.removeAllChildren(); //Unfortunately works really slow due to https://jira.appcelerator.org/browse/TIMOB-23447
+
+    mainWin.add(win);
+}
+
+function setPickAnother(win, mainWin) {
+    finishedBut = Titanium.UI.createButton({
+        title: 'Pick Another Eatery',
+        height: 'auto',
+        width: 'auto',
+        textAlign: 'center',
+        bottom: 20
+    });
+    win.add(finishedBut);
+    //Just refresh the content
+    finishedBut.addEventListener('click', function (e) {
+        setContentFromGpsAndZomato(mainWin);
+    });
+}
+
+function setFeedbackButtons(eatery, win, topVal) {
+    likeBut = Titanium.UI.createButton({
+        height: 75,
+        width: 75,
+        right: '20%',
+        backgroundImage: "like_btn.png",
+        top: topVal
+    });
+    likeBut.addEventListener('click', function (e) {
+        displayEatery(win, 30, 'feedbackLike', JSON.parse(eateryInfo));
+    });
+    win.add(likeBut);
+
+    dislikeBut = Titanium.UI.createButton({
+        height: 75,
+        width: 75,
+        left: '20%',
+        backgroundImage: "dislike_btn.png",
+        top: topVal
+    });
+    dislikeBut.addEventListener('click', function (e) {
+        addDislikedRestaurant(eatery.id, eatery.name);
+        displayEatery(win, 30, 'feedbackDislike', JSON.parse(eateryInfo));
+    });
+    win.add(dislikeBut);
+}
+
+function setLikeButtons(win, topVal) {
+    likeBut = Titanium.UI.createButton({
+        height: 75,
+        width: 75,
+        right: '20%',
+        backgroundImage: "like_btn.png",
+        top: topVal
+    });
+    likeBut.addEventListener('click', function (e) {
+        handleAcceptEatery(win);
+    });
+    win.add(likeBut);
+
+    dislikeBut = Titanium.UI.createButton({
+        height: 75,
+        width: 75,
+        left: '20%',
+        backgroundImage: "dislike_btn.png",
+        top: topVal
+    });
+    dislikeBut.addEventListener('click', function (e) {
+        addDislikedRestaurant(eateries[0].restaurant.id, eateries[0].restaurant.name);
+        eateries.splice(0, 1);
+        handleEatery(win);
+    });
+    win.add(dislikeBut);
 }
 
 
@@ -238,81 +374,26 @@ function addNotification(eateryInfo) {
     intent.putExtra('timestamp', new Date(new Date().getTime() + getNotificationSecond() * 1000));
     intent.putExtra('interval', 5000);
     Ti.Android.startService(intent);
-
 }
 
-
-function displayEatery(mainWin, baseTop, purpose, eatery) {
-
-    var win = constructScrollView(0); //Use this for easy replacement
-    if (purpose == 'mainDisplay') {
-        win.add(constructLabel(baseTop, 'Found a place to eat:', 'center'));
-    } else if (purpose == 'approval') {
-        win.add(constructLabel(baseTop, 'Going to the eatery!', 'center'));
-        var secondMsg = 'You will be asked ' + getNotificationSecond() + ' seconds later';
-        win.add(constructLabel(baseTop + 30, secondMsg, 'center'));
-        win.add(constructLabel(baseTop + 60, 'whether you liked the eatery', 'center'));
-        baseTop += 60;
-    } else if(purpose == 'feedback') {
-        win.add(constructLabel(baseTop, 'Did you like this place?', 'center'));
-    }
-
-    win.add(constructLabel(baseTop + 30, 'Name:', 'left'));
-    win.add(constructLabel(baseTop + 30, eatery.name, 'right'));
-
-    win.add(constructLabel(baseTop + 55, 'Distance:', 'left'));
-    win.add(constructLabel(baseTop + 55, eatery.distance, 'right'));
-
-    win.add(constructLabel(baseTop + 80, 'Cuisine:', 'left'));
-    win.add(constructLabel(baseTop + 80, eatery.cuisines, 'right'));
-
-    win.add(constructLabel(baseTop + 105, 'Rating:', 'left'));
-    win.add(constructLabel(baseTop + 105, eatery.rating, 'right'));
-
-    win.add(constructLabel(baseTop + 130, 'Avg Price:', 'left'));
-    win.add(constructLabel(baseTop + 130, eatery.cost, 'right'));
-
-    win.add(constructLabel(baseTop + 155, 'Address:', 'left'));
-    win.add(constructLabelToRight(baseTop + 155, eatery.address, '80%'));
-
-    if (purpose == 'mainDisplay') {
-        setLikeButtons(win, baseTop + 240);
-    }
-    mainWin.removeAllChildren(); //Unfortunately works really slow due to https://jira.appcelerator.org/browse/TIMOB-23447
-
-    mainWin.add(win);
-}
-
-function setLikeButtons(win, topVal) {
-    likeBut = Titanium.UI.createButton({
-        height: 75,
-        width: 75,
-        right: '20%',
-        backgroundImage: "like_btn.png",
-        top: topVal
+function setTryAgainButton(win) {
+    finishedBut = Titanium.UI.createButton({
+        title: 'Try Again',
+        height: 'auto',
+        width: 'auto',
+        textAlign: 'center',
+        bottom: 20
     });
-    likeBut.addEventListener('click', function (e) {
-        handleAcceptEatery(win);
+    win.add(finishedBut);
+    //Just refresh the content
+    finishedBut.addEventListener('click', function (e) {
+        setContentFromGpsAndZomato(win);
     });
-    win.add(likeBut);
-
-    dislikeBut = Titanium.UI.createButton({
-        height: 75,
-        width: 75,
-        left: '20%',
-        backgroundImage: "dislike_btn.png",
-        top: topVal
-    });
-    dislikeBut.addEventListener('click', function (e) {
-        addDislikedRestaurant(eateries[0].restaurant.id, eateries[0].restaurant.name);
-        eateries.splice(0, 1);
-        handleEatery(win);
-    });
-    win.add(dislikeBut);
 }
 
 function setContentFromGpsAndZomato(mainWin) {
     mainWin.add(constructLabel(40, 'Please wait while finding new eateries', 'center'));
+    setTryAgainButton(mainWin);
     var coords = getCurrentCoordinates();
     console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
     getRestaurants(coords.latitude, coords.longitude, mainWin);
