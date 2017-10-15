@@ -129,6 +129,31 @@ function handleEatery(win) {
 
 }
 
+function removeEateryIfDisliked() {
+    var newEatery = [];
+    dislikedEatery = getDislikedRestaurants();
+    eateries.forEach(function (foundEatery) {
+        console.log("Comparing foundEatery " + foundEatery);
+        var foundEateryId = foundEatery.restaurant.id;
+        console.log("Which has id of " + foundEateryId);
+
+        isDisliked = false;
+        dislikedEatery.forEach(function (dislikedEatery) {
+            console.log("Comparing dislikedEatery " + dislikedEatery);
+            console.log("Comparing dislikedEatery with id " + dislikedEatery.id);
+            if (dislikedEatery.id == foundEateryId) {
+                isDisliked = true;
+            }
+        });
+        if (!isDisliked) {
+            console.log("It's not disliked so adding");
+            newEatery.push(foundEatery);
+        }
+        console.log("It's disliked ignoring");
+    });
+    eateries = newEatery;
+}
+
 function getRestaurants(lat, lon, currWin) {
     var url = "https://developers.zomato.com/api/v2.1/geocode?lat=" + lat + "&lon=" + lon;
 
@@ -137,7 +162,7 @@ function getRestaurants(lat, lon, currWin) {
             response = JSON.parse(this.responseText);
             if (response.nearby_restaurants instanceof Array) {
                 eateries = response.nearby_restaurants;
-
+                removeEateryIfDisliked();
                 Ti.API.info("Restaurants are: " + response.nearby_restaurants);
                 eateries.forEach(function (entry) {
                     console.log(entry);
