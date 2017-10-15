@@ -5,15 +5,15 @@ Ti.include('db.js');
 function edit_ingredients() {
     var currentWin = Titanium.UI.currentWindow;
 
-    currentWin.add(constructLabel(10, 'Edit List of Ingredients:', 'center'));
+    currentWin.add(constructLabel(10, 'Remove Disliked Eateries:', 'center'));
 
     var ingredientTableView = constructTableView(50);
-    var tableRow = prepTableRow(Ti.App.ingredientList);
+    var tableRow = prepTableRowWithMap(getDislikedRestaurants());
     ingredientTableView.data = tableRow;
     //Add callback for choosing the items
     ingredientTableView.addEventListener('click', function (e) {
         tableRow[e.index].hasCheck = !tableRow[e.index].hasCheck;
-        console.info("Index is " + e.index + " title is " + tableRow[e.index].title);
+        console.info("Index is " + e.index + " id is " + tableRow[e.index].id + " name is " + tableRow[e.index].name);
     });
     currentWin.add(ingredientTableView);
 

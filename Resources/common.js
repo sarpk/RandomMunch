@@ -74,7 +74,7 @@ function addOpenCategoryDialog(button) {
 }
 
 function constructLabel(topVal, textVal, align) {
-return constructLabelWithWidth(topVal, textVal, align, Ti.Platform.displayCaps.platformWidth);
+    return constructLabelWithWidth(topVal, textVal, align, Ti.Platform.displayCaps.platformWidth);
 }
 
 function constructLabelWithWidth(topVal, textVal, align, textWidth) {
@@ -103,6 +103,18 @@ function constructTableView(topVal) {
 
 
 //Helper functions
+
+function prepTableRowWithMap(mapData) {
+    var retVal = [];
+    for (var data in mapData) {
+        data[hasCheck] = false;
+        var row = Ti.UI.createTableViewRow(data);
+        retVal.push(row);
+        console.log("pushed " + row.name);
+    }
+    console.log("total size is  " + retVal.length);
+    return retVal;
+}
 
 function prepTableRow(data) {
     var retVal = [];
