@@ -3,11 +3,11 @@ function initDb() {
 
     Ti.Database.install('/dbname.sqlite', 'randomMunchDb');
     var db = Ti.Database.open('randomMunchDb');
-    db.execute('CREATE TABLE IF NOT EXISTS LIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);').close();
-    db.execute('CREATE TABLE IF NOT EXISTS DISLIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);').close();
-    db.execute('CREATE TABLE IF NOT EXISTS SETTINGS(id INTEGER PRIMARY KEY, notificationSeconds INTEGER);').close();
+    db.execute('CREATE TABLE IF NOT EXISTS LIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);');
+    db.execute('CREATE TABLE IF NOT EXISTS DISLIKED_RESTAURANTS(id INTEGER PRIMARY KEY, name TEXT);');
+    db.execute('CREATE TABLE IF NOT EXISTS SETTINGS(id INTEGER PRIMARY KEY, notificationSeconds INTEGER);');
     try {
-        db.execute('INSERT INTO SETTINGS (id,notificationSeconds) VALUES (?,?)', 1, 3600).close();
+        db.execute('INSERT INTO SETTINGS (id,notificationSeconds) VALUES (?,?)', 1, 3600);
     }
     catch (e) {
         //Primary key error, suppress it
@@ -18,7 +18,7 @@ function initDb() {
 
 function updateNotificationSecond(seconds) {
     var db = Ti.Database.open('randomMunchDb');
-    db.execute('UPDATE SETTINGS SET notificationSeconds = ? WHERE id = 1', seconds).close();
+    db.execute('UPDATE SETTINGS SET notificationSeconds = ? WHERE id = 1', seconds);
     db.close();
 }
 
@@ -78,24 +78,24 @@ function getDislikedRestaurants() {
 
 function deleteDislikedRestaurant(id) {
     var db = Ti.Database.open('randomMunchDb');
-    db.execute('DELETE FROM DISLIKED_RESTAURANTS WHERE id=?', id).close();
+    db.execute('DELETE FROM DISLIKED_RESTAURANTS WHERE id=?', id);
     db.close();
 }
 
 function deleteLikedRestaurant(id) {
     var db = Ti.Database.open('randomMunchDb');
-    db.execute('DELETE FROM LIKED_RESTAURANTS WHERE id=?', id).close();
+    db.execute('DELETE FROM LIKED_RESTAURANTS WHERE id=?', id);
     db.close();
 }
 
 function addDislikedRestaurant(id, name) {
     var db = Ti.Database.open('randomMunchDb');
-    db.execute('INSERT INTO DISLIKED_RESTAURANTS (id,name) VALUES (?,?)', id, name).close();
+    db.execute('INSERT INTO DISLIKED_RESTAURANTS (id,name) VALUES (?,?)', id, name);
     db.close();
 }
 
 function addLikedRestaurant(id, name) {
     var db = Ti.Database.open('randomMunchDb');
-    db.execute('INSERT INTO LIKED_RESTAURANTS (id,name) VALUES (?,?)', id, name).close();
+    db.execute('INSERT INTO LIKED_RESTAURANTS (id,name) VALUES (?,?)', id, name);
     db.close();
 }
