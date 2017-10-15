@@ -64,7 +64,7 @@ function createSelectIngredientsView() {
     ingredientsButton.addEventListener('click', function (e) {
         var window = Ti.UI.createWindow({
             fullscreen: true,
-            url: 'edit_ingredients.js'
+            url: 'settings.js'
         });
         window.title = 'Random Munchies';
         window.refreshIngredients = refreshIngredients;
@@ -289,7 +289,7 @@ function constructMainView(_args) {
             console.log("Clicked button " + e.source.title);
             var window = Ti.UI.createWindow({
                 fullscreen: true,
-                url: 'edit_ingredients.js'
+                url: 'settings.js'
             });
             window.title = 'Random Munchies';
             window.resetParentContent = setContentFromGpsAndZomato;
