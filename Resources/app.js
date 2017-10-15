@@ -133,23 +133,25 @@ function removeEateryIfDisliked() {
     var newEatery = [];
     dislikedEatery = getDislikedRestaurants();
     eateries.forEach(function (foundEatery) {
-        console.log("Comparing foundEatery " + foundEatery);
+        // console.log("Comparing foundEatery " + foundEatery.restaurant.id);
         var foundEateryId = foundEatery.restaurant.id;
-        console.log("Which has id of " + foundEateryId);
+        // console.log("Which has id of " + foundEateryId);
 
         isDisliked = false;
         dislikedEatery.forEach(function (dislikedEatery) {
-            console.log("Comparing dislikedEatery " + dislikedEatery);
-            console.log("Comparing dislikedEatery with id " + dislikedEatery.id);
+            // console.log("Comparing dislikedEatery " + dislikedEatery);
+            // console.log("Comparing dislikedEatery with id " + dislikedEatery.id);
             if (dislikedEatery.id == foundEateryId) {
                 isDisliked = true;
             }
         });
         if (!isDisliked) {
-            console.log("It's not disliked so adding");
+            // console.log("It's not disliked so adding");
             newEatery.push(foundEatery);
+        } else {
+            // console.log("It's disliked ignoring");
         }
-        console.log("It's disliked ignoring");
+
     });
     eateries = newEatery;
 }
@@ -163,13 +165,8 @@ function getRestaurants(lat, lon, currWin) {
             if (response.nearby_restaurants instanceof Array) {
                 eateries = response.nearby_restaurants;
                 removeEateryIfDisliked();
-                Ti.API.info("Restaurants are: " + response.nearby_restaurants);
-                eateries.forEach(function (entry) {
-                    console.log(entry);
-                });
                 handleEatery(currWin);
             }
-
 
         }
         catch (err) { //An error occurred regarding to response

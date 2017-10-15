@@ -46,7 +46,7 @@ function settings() {
     currentWin.add(finishedBut);
     //Callback for swapping the current view with global and refreshing main view
     finishedBut.addEventListener('click', function (e) {
-	currentWin.parentWin.removeAllChildren()
+        currentWin.parentWin.removeAllChildren();
         currentWin.resetParentContent(currentWin.parentWin);
         currentWin.close();
     });

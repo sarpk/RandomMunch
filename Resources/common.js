@@ -93,7 +93,7 @@ function constructLabelToRight(topVal, textVal, textWidth) {
         text: textVal,
         font: {fontSize: 20, fontFamily: 'Helvetica Neue'},
         textAlign: 'right',
-	right: 0,
+        right: 0,
         height: 'auto',
         width: textWidth
     });

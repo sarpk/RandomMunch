@@ -1,4 +1,3 @@
-
 function initDb() {
 
     Ti.Database.install('/dbname.sqlite', 'randomMunchDb');
