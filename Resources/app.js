@@ -250,6 +250,17 @@ function constructMainView(_args) {
     });
 
 
+mainWin.activity.onCreateOptionsMenu = function(e) {
+            var menu = e.menu;
+        var menuItem = menu.add({
+            title : "Settings",
+		icon : Ti.Android.R.drawable.ic_menu_preferences,
+		showAsAction: Ti.Android.SHOW_AS_ACTION_ALWAYS
+        });
+        menuItem.addEventListener("click", function(e) {
+    console.log("Clicked button " + e.source.title);
+        });
+};
 
     mainWin.add(constructLabel(40, 'Please wait while finding new eateries', 'center'));
 
