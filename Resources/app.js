@@ -266,6 +266,12 @@ function removeEateryIfDisliked() {
 }
 
 function getRestaurants(lat, lon, currWin) {
+    //Zomato has two APIs one is search and other one is geocode
+    //Search functionality unfortunately only retrieves 100 results on a given latitude and longitude
+    //The problem with search functionality is, despite having a radius filter; the filter does not work
+    //So just specifying a coordinate in Brisbane results more than 6000 restaurants despite radius only being 1km
+    //Instead using this geocode endpoint, which only gives 10 restaurants that is nearby to latitude and longitude
+    //However it successfully detects suburbs and gives out different nearby restaurants
     var url = "https://developers.zomato.com/api/v2.1/geocode?lat=" + lat + "&lon=" + lon;
 
     var eateryHandler = function (e) {
