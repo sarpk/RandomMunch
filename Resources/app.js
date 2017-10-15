@@ -108,6 +108,19 @@ function getCurrentCoordinates() {
 
 var eateries = [];
 
+function eateryInfoParse(eatery) {
+    var ratingStr = eatery.user_rating.aggregate_rating + '/5';
+    var avgCostStr = eatery.currency + eatery.average_cost_for_two / 2 + ' per person';
+    var retVal = {
+        name: eatery.name,
+        address: eatery.location.address,
+        distance: eatery.location.latitude,
+        cuisines: eatery.cuisines,
+        rating: ratingStr,
+        cost: avgCostStr
+    };
+    return retVal;
+}
 
 function handleEatery(win) {
     if (eateries.length == 0) {
@@ -116,17 +129,9 @@ function handleEatery(win) {
         win.add(constructLabel(10, 'Could not find any eatery :(', 'center'));
         return;
     }
-    var eatery = eateries[0].restaurant;
+    var eatery = eateryInfoParse(eateries[0].restaurant);
 
-    displayEatery(win, 30, 'mainDisplay',
-        eatery.name,
-        eatery.location.address,
-        eatery.location.latitude,
-        eatery.cuisines,
-        eatery.user_rating.aggregate_rating + '/5',
-        eatery.currency + eatery.average_cost_for_two / 2 + ' per person'
-    );
-
+    displayEatery(win, 30, 'mainDisplay', eatery);
 
 }
 
@@ -137,17 +142,25 @@ function handleAcceptEatery(win) {
         win.add(constructLabel(10, 'Could not find any eatery :(', 'center'));
         return;
     }
-    var eatery = eateries[0].restaurant;
+    var eatery = eateryInfoParse(eateries[0].restaurant);
 
-    displayEatery(win, 30, 'approval',
-        eatery.name,
-        eatery.location.address,
-        eatery.location.latitude,
-        eatery.cuisines,
-        eatery.user_rating.aggregate_rating + '/5',
-        eatery.currency + eatery.average_cost_for_two / 2 + ' per person'
-    );
-    addNotification(); //Use notification to let user know
+    displayEatery(win, 30, 'approval', eatery);
+
+    addNotification(eatery); //Use notification to let user know
+}
+
+function registerForNotificationCallbacks() {
+
+    var broadcastReceiver = Ti.Android.createBroadcastReceiver({
+        onReceived: function (e) {
+            var intent = e.intent;
+            eateryInfo = intent.getStringExtra('eateryInfo');
+            console.log("Will process this eatery " + eateryInfo);
+            displayEatery(win, 30, 'feedback', JSON.parse(eateryInfo));
+        }
+    });
+    Ti.Android.registerBroadcastReceiver(broadcastReceiver, ['au.edu.usq.csc8420.sarp.a5.random.munchies.FEEDBACK']);
+
 }
 
 
@@ -215,34 +228,21 @@ function getRestaurants(lat, lon, currWin) {
     client.send();
 }
 
-function addNotification() {
+function addNotification(eateryInfo) {
     var intent = Ti.Android.createServiceIntent({
         url: 'ExampleService.js'
     });
     intent.putExtra('title', 'Eatery Feedback');
     intent.putExtra('message', 'Did you enjoy your food?');
-    intent.putExtra('foo', 'bar');
+    intent.putExtra('eateryInfo', JSON.stringify(eateryInfo));
     intent.putExtra('timestamp', new Date(new Date().getTime() + getNotificationSecond() * 1000));
     intent.putExtra('interval', 5000);
     Ti.Android.startService(intent);
 
-	
 }
 
-function registerForNotificationCallbacks() {
 
-var broadcastReceiver = Ti.Android.createBroadcastReceiver({
-    onReceived : function(e) {
-        var intent = e.intent;
-            console.log("Got the intent here " + intent);
-            console.log("Got the event here " + e);
-    }
-});
-Ti.Android.registerBroadcastReceiver(broadcastReceiver, ['au.edu.usq.csc8420.sarp.a5.random.munchies.FEEDBACK']);
-
-}
-
-function displayEatery(mainWin, baseTop, purpose, name, address, distance, cuisine, rating, avgPrice) {
+function displayEatery(mainWin, baseTop, purpose, eatery) {
 
     var win = constructScrollView(0); //Use this for easy replacement
     if (purpose == 'mainDisplay') {
@@ -253,25 +253,27 @@ function displayEatery(mainWin, baseTop, purpose, name, address, distance, cuisi
         win.add(constructLabel(baseTop + 30, secondMsg, 'center'));
         win.add(constructLabel(baseTop + 60, 'whether you liked the eatery', 'center'));
         baseTop += 60;
+    } else if(purpose == 'feedback') {
+        win.add(constructLabel(baseTop, 'Did you like this place?', 'center'));
     }
 
     win.add(constructLabel(baseTop + 30, 'Name:', 'left'));
-    win.add(constructLabel(baseTop + 30, name, 'right'));
+    win.add(constructLabel(baseTop + 30, eatery.name, 'right'));
 
     win.add(constructLabel(baseTop + 55, 'Distance:', 'left'));
-    win.add(constructLabel(baseTop + 55, distance, 'right'));
+    win.add(constructLabel(baseTop + 55, eatery.distance, 'right'));
 
     win.add(constructLabel(baseTop + 80, 'Cuisine:', 'left'));
-    win.add(constructLabel(baseTop + 80, cuisine, 'right'));
+    win.add(constructLabel(baseTop + 80, eatery.cuisines, 'right'));
 
     win.add(constructLabel(baseTop + 105, 'Rating:', 'left'));
-    win.add(constructLabel(baseTop + 105, rating, 'right'));
+    win.add(constructLabel(baseTop + 105, eatery.rating, 'right'));
 
     win.add(constructLabel(baseTop + 130, 'Avg Price:', 'left'));
-    win.add(constructLabel(baseTop + 130, avgPrice, 'right'));
+    win.add(constructLabel(baseTop + 130, eatery.cost, 'right'));
 
     win.add(constructLabel(baseTop + 155, 'Address:', 'left'));
-    win.add(constructLabelToRight(baseTop + 155, address, '80%'));
+    win.add(constructLabelToRight(baseTop + 155, eatery.address, '80%'));
 
     if (purpose == 'mainDisplay') {
         setLikeButtons(win, baseTop + 240);
@@ -355,10 +357,11 @@ function constructMainView(_args) {
     scrollView.add(createSelectIngredientsView());
 
     setContentFromGpsAndZomato(mainWin);
-	registerForNotificationCallbacks();
+
+    registerForNotificationCallbacks();
 
     return mainWin;
-};
+}
 
 initDb();
 constructMainView({title: 'Random Munchies'}).open();
