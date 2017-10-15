@@ -17,7 +17,7 @@ function settings() {
     });
     currentWin.add(eateriesTableView);
 
-    var deleteItemBut = constructButton(270, 'Delete Selected Eateries');
+    var deleteItemBut = constructButton(370, 'Delete Selected Eateries');
     //Add callback for deleting from list
     deleteItemBut.addEventListener('click', function (e) {
         console.info("Size before is " + tableRow.length);
@@ -27,8 +27,8 @@ function settings() {
     });
     currentWin.add(deleteItemBut);
 
-    currentWin.add(constructLabel(320, 'Notification Seconds (ie 3600 is 1 hour):', 'left'));
-    var notifSecsTxtField = constructTextField(320, getNotificationSecond());
+    currentWin.add(constructLabel(430, 'Notification Seconds (ie 3600 is 1 hour):', 'left'));
+    var notifSecsTxtField = constructTextField(430, getNotificationSecond());
     currentWin.add(notifSecsTxtField);
     //Add callback for setting db value
     notifSecsTxtField.addEventListener('return', function (e) {
@@ -41,27 +41,16 @@ function settings() {
         height: 'auto',
         width: 'auto',
         textAlign: 'center',
-        bottom: 10
+        bottom: 20
     });
     currentWin.add(finishedBut);
     //Callback for swapping the current view with global and refreshing main view
     finishedBut.addEventListener('click', function (e) {
+	currentWin.parentWin.removeAllChildren()
         currentWin.resetParentContent(currentWin.parentWin);
         currentWin.close();
     });
 
-    cancelBut = Titanium.UI.createButton({
-        title: 'Cancel',
-        height: 'auto',
-        width: 'auto',
-        right: 10,
-        bottom: 10
-    });
-    currentWin.add(cancelBut);
-    //Just close current window (same as back press)
-    cancelBut.addEventListener('click', function (e) {
-        currentWin.close();
-    });
 
     return currentWin;
 }

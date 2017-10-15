@@ -205,7 +205,7 @@ function displayEatery(mainWin, baseTop, name, address, distance, cuisine, ratin
     win.add(constructLabel(baseTop + 130, avgPrice, 'right'));
 
     win.add(constructLabel(baseTop + 155, 'Address:', 'left'));
-    win.add(constructLabelWithWidth(baseTop + 155, address, 'right', '80%'));
+    win.add(constructLabelToRight(baseTop + 155, address, '80%'));
 
     setLikeButtons(win, baseTop + 240);
     mainWin.removeAllChildren(); //Unfortunately works really slow due to https://jira.appcelerator.org/browse/TIMOB-23447
@@ -242,6 +242,7 @@ function setLikeButtons(win, topVal) {
 }
 
 function setContentFromGpsAndZomato(mainWin) {
+    mainWin.add(constructLabel(40, 'Please wait while finding new eateries', 'center'));
     var coords = getCurrentCoordinates();
     console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
     getRestaurants(coords.latitude, coords.longitude, mainWin);
@@ -274,8 +275,6 @@ function constructMainView(_args) {
             window.open();
         });
     };
-
-    mainWin.add(constructLabel(40, 'Please wait while finding new eateries', 'center'));
 
     var scrollView = constructScrollView(200);
 

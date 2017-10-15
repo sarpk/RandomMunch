@@ -40,12 +40,12 @@ function constructScrollView(topVal) {
 
 function constructTextField(topVal, hintTextVal) {
     return Titanium.UI.createTextField({
-        color: '#336699',
+        color: '#999',
         top: topVal,
         height: 'auto',
         width: 'auto',
         hintText: hintTextVal,
-        textAlign: 'right',
+        right: 0,
         keyboardType: Ti.UI.KEYBOARD_NUMBER_PAD,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
@@ -75,16 +75,25 @@ function addOpenCategoryDialog(button) {
 }
 
 function constructLabel(topVal, textVal, align) {
-    return constructLabelWithWidth(topVal, textVal, align, Ti.Platform.displayCaps.platformWidth);
-}
-
-function constructLabelWithWidth(topVal, textVal, align, textWidth) {
     return Titanium.UI.createLabel({
         color: '#999',
         top: topVal,
         text: textVal,
         font: {fontSize: 20, fontFamily: 'Helvetica Neue'},
         textAlign: align,
+        height: 'auto',
+        width: Ti.Platform.displayCaps.platformWidth
+    });
+}
+
+function constructLabelToRight(topVal, textVal, textWidth) {
+    return Titanium.UI.createLabel({
+        color: '#999',
+        top: topVal,
+        text: textVal,
+        font: {fontSize: 20, fontFamily: 'Helvetica Neue'},
+        textAlign: 'right',
+	right: 0,
         height: 'auto',
         width: textWidth
     });
@@ -93,8 +102,8 @@ function constructLabelWithWidth(topVal, textVal, align, textWidth) {
 function constructTableView(topVal) {
     return Titanium.UI.createTableView({
         top: topVal,
-        height: 200,
-        width: 200,
+        height: 300,
+        width: 250,
         scrollable: true,
         borderColor: "black"
     });
