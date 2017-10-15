@@ -149,7 +149,7 @@ function handleAcceptEatery(win) {
     addNotification(eatery); //Use notification to let user know
 }
 
-function registerForNotificationCallbacks() {
+function registerForNotificationCallbacks(win) {
 
     var broadcastReceiver = Ti.Android.createBroadcastReceiver({
         onReceived: function (e) {
@@ -358,7 +358,7 @@ function constructMainView(_args) {
 
     setContentFromGpsAndZomato(mainWin);
 
-    registerForNotificationCallbacks();
+    registerForNotificationCallbacks(mainWin);
 
     return mainWin;
 }
