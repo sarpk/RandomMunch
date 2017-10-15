@@ -118,7 +118,28 @@ function handleEatery(win) {
     }
     var eatery = eateries[0].restaurant;
 
-    displayEatery(win, 30,
+    displayEatery(win, 30, 'mainDisplay',
+        eatery.name,
+        eatery.location.address,
+        eatery.location.latitude,
+        eatery.cuisines,
+        eatery.user_rating.aggregate_rating + '/5',
+        eatery.currency + eatery.average_cost_for_two / 2 + ' per person'
+    );
+
+    addNotification(); //Use notification to let user know
+}
+
+function handleAcceptEatery(win) {
+    if (eateries.length == 0) {
+        console.log("No eatery found");
+        win.removeAllChildren();
+        win.add(constructLabel(10, 'Could not find any eatery :(', 'center'));
+        return;
+    }
+    var eatery = eateries[0].restaurant;
+
+    displayEatery(win, 30, 'approval',
         eatery.name,
         eatery.location.address,
         eatery.location.latitude,
@@ -128,6 +149,7 @@ function handleEatery(win) {
     );
 
 }
+
 
 function removeEateryIfDisliked() {
     var newEatery = [];
@@ -199,17 +221,24 @@ function addNotification() {
     });
     intent.putExtra('title', 'Eatery Feedback');
     intent.putExtra('message', 'Did you enjoy your food?');
-    intent.putExtra('timestamp', new Date(new Date().getTime() + 20 * 1000));
+    intent.putExtra('foo', 'bar');
+    intent.putExtra('timestamp', new Date(new Date().getTime() + getNotificationSecond() * 1000));
     intent.putExtra('interval', 10000);
     Ti.Android.startService(intent);
-
 }
 
-function displayEatery(mainWin, baseTop, name, address, distance, cuisine, rating, avgPrice) {
+function displayEatery(mainWin, baseTop, purpose, name, address, distance, cuisine, rating, avgPrice) {
 
     var win = constructScrollView(0); //Use this for easy replacement
-
-    win.add(constructLabel(baseTop, 'Found a place to eat:', 'center'));
+    if (purpose == 'mainDisplay') {
+        win.add(constructLabel(baseTop, 'Found a place to eat:', 'center'));
+    } else if (purpose == 'approval') {
+        win.add(constructLabel(baseTop, 'Going to the eatery!', 'center'));
+        var secondMsg = 'You will be asked ' + getNotificationSecond() + ' seconds later';
+        win.add(constructLabel(baseTop + 30, secondMsg, 'center'));
+        win.add(constructLabel(baseTop + 60, 'whether you liked the eatery', 'center'));
+        baseTop += 60;
+    }
 
     win.add(constructLabel(baseTop + 30, 'Name:', 'left'));
     win.add(constructLabel(baseTop + 30, name, 'right'));
@@ -229,7 +258,9 @@ function displayEatery(mainWin, baseTop, name, address, distance, cuisine, ratin
     win.add(constructLabel(baseTop + 155, 'Address:', 'left'));
     win.add(constructLabelToRight(baseTop + 155, address, '80%'));
 
-    setLikeButtons(win, baseTop + 240);
+    if (purpose == 'mainDisplay') {
+        setLikeButtons(win, baseTop + 240);
+    }
     mainWin.removeAllChildren(); //Unfortunately works really slow due to https://jira.appcelerator.org/browse/TIMOB-23447
 
     mainWin.add(win);
@@ -243,7 +274,9 @@ function setLikeButtons(win, topVal) {
         backgroundImage: "like_btn.png",
         top: topVal
     });
-
+    likeBut.addEventListener('click', function (e) {
+        handleAcceptEatery(win);
+    });
     win.add(likeBut);
 
     dislikeBut = Titanium.UI.createButton({
@@ -258,9 +291,7 @@ function setLikeButtons(win, topVal) {
         eateries.splice(0, 1);
         handleEatery(win);
     });
-
     win.add(dislikeBut);
-
 }
 
 function setContentFromGpsAndZomato(mainWin) {
@@ -309,7 +340,6 @@ function constructMainView(_args) {
     scrollView.add(createSelectIngredientsView());
 
     setContentFromGpsAndZomato(mainWin);
-    addNotification();
 
     return mainWin;
 };
