@@ -264,7 +264,6 @@ function constructMainView(_args) {
                 url: 'edit_ingredients.js'
             });
             window.title = 'Random Munchies';
-            window.refreshIngredients = refreshIngredients;
             window.open();
         });
     };
