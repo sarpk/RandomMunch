@@ -127,7 +127,7 @@ function handleEatery(win) {
         eatery.currency + eatery.average_cost_for_two / 2 + ' per person'
     );
 
-    addNotification(); //Use notification to let user know
+
 }
 
 function handleAcceptEatery(win) {
@@ -147,7 +147,7 @@ function handleAcceptEatery(win) {
         eatery.user_rating.aggregate_rating + '/5',
         eatery.currency + eatery.average_cost_for_two / 2 + ' per person'
     );
-
+    addNotification(); //Use notification to let user know
 }
 
 
@@ -223,8 +223,23 @@ function addNotification() {
     intent.putExtra('message', 'Did you enjoy your food?');
     intent.putExtra('foo', 'bar');
     intent.putExtra('timestamp', new Date(new Date().getTime() + getNotificationSecond() * 1000));
-    intent.putExtra('interval', 10000);
+    intent.putExtra('interval', 5000);
     Ti.Android.startService(intent);
+
+	
+}
+
+function registerForNotificationCallbacks() {
+
+var broadcastReceiver = Ti.Android.createBroadcastReceiver({
+    onReceived : function(e) {
+        var intent = e.intent;
+            console.log("Got the intent here " + intent);
+            console.log("Got the event here " + e);
+    }
+});
+Ti.Android.registerBroadcastReceiver(broadcastReceiver, ['au.edu.usq.csc8420.sarp.a5.random.munchies.FEEDBACK']);
+
 }
 
 function displayEatery(mainWin, baseTop, purpose, name, address, distance, cuisine, rating, avgPrice) {
@@ -340,6 +355,7 @@ function constructMainView(_args) {
     scrollView.add(createSelectIngredientsView());
 
     setContentFromGpsAndZomato(mainWin);
+	registerForNotificationCallbacks();
 
     return mainWin;
 };

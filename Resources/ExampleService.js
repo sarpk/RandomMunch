@@ -15,7 +15,7 @@ if (new Date() > timestamp) {
     });
     intent.flags |= Ti.Android.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Ti.Android.FLAG_ACTIVITY_SINGLE_TOP;
     intent.addCategory(Ti.Android.CATEGORY_LAUNCHER);
-  
+
     // Create notification
     var notification = Ti.Android.createNotification({
         contentIntent : Ti.Android.createPendingIntent({intent : intent}),
@@ -28,4 +28,15 @@ if (new Date() > timestamp) {
     
     // Stop the service once the notification is sent
     Ti.Android.stopService(serviceIntent);
+
+var intent = Ti.Android.createBroadcastIntent({
+action: 'au.edu.usq.csc8420.sarp.a5.random.munchies.FEEDBACK'
+});
+intent.putExtra(Ti.Android.EXTRA_TEXT, 'Download update');
+Ti.Android.currentActivity.sendBroadcast(intent, 'au.edu.usq.csc8420.sarp.a5.random.munchies.FEEDBACK');
+
+
+	console.log("Notif stuff ended");
+    var fooVal = serviceIntent.getStringExtra('foo');
+	console.log("Val of foo " + fooVal);
 } 
