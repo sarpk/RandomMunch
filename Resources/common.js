@@ -107,10 +107,12 @@ function constructTableView(topVal) {
 function prepTableRowWithMap(mapData) {
     var retVal = [];
     for (var data in mapData) {
-        data[hasCheck] = false;
-        var row = Ti.UI.createTableViewRow(data);
+        mapData[data]['hasCheck'] = false;
+        mapData[data]['title'] = mapData[data]['name'];
+        console.log("added hascheck " + JSON.stringify(mapData[data]));
+        var row = Ti.UI.createTableViewRow(mapData[data]);
         retVal.push(row);
-        console.log("pushed " + row.name);
+        console.log("pushed " + row.title);
     }
     console.log("total size is  " + retVal.length);
     return retVal;
@@ -132,6 +134,7 @@ function deleteFromList(list) {
     while (i--) {
         if (list[i].hasCheck) {
             console.info("Index " + i + " deleting " + list[i].name + " with id " + list[i].id);
+deleteDislikedRestaurant(list[i].id);
             list.splice(i, 1);
         }
     }
