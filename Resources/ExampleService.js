@@ -29,11 +29,11 @@ if (new Date() > timestamp) {
     // Stop the service once the notification is sent
     Ti.Android.stopService(serviceIntent);
 
+    //Send the data in this intent back to main screen
     var feedbackIntent = Ti.Android.createBroadcastIntent({
         action: 'au.edu.usq.csc8420.sarp.a5.random.munchies.FEEDBACK'
     });
     var eateryInfo = serviceIntent.getStringExtra('eateryInfo');
-    console.log("Val of eateryInfo " + eateryInfo);
     feedbackIntent.putExtra('eateryInfo', eateryInfo);
     Ti.Android.currentActivity.sendBroadcast(feedbackIntent, 'au.edu.usq.csc8420.sarp.a5.random.munchies.FEEDBACK');
 

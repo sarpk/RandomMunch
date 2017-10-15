@@ -6,75 +6,14 @@ Ti.include('db.js');
 // this sets the background color of the master UIView (when there are no windows/tab groups on it)
 Titanium.UI.setBackgroundColor('#000');
 
-Ti.App.ingredientList = {
-    "Tomato": null,
-    "Lemon": null,
-    "Lime": null,
-    "Capsicum": null,
-    "Eggplant": null,
-    "Zucchini": null
-};
+var currLat = 0;
+var currLong = 0;
 
-var categoryOptions = {
-    cancel: 2,
-    options: ['Meat', 'Fish', 'Pasta', 'Vegetarian', 'Noodle', 'Salad', 'Seafood', 'Rice'],
-    destructive: 0,
-    title: 'Category'
-};
+var eateries = [];
 
 // End of Globals
 
-//Helper function
-
-function createSelectIngredientsView() {
-    var ingredientView = Ti.UI.createView({
-        backgroundColor: '#606060',
-        borderRadius: 10,
-        top: 570,
-        height: 300,
-        width: 250
-    });
-
-    ingredientView.add(constructLabel(10, 'Select Ingredients:', 'center'));
-
-    // create table view
-    var ingredientTable = constructTableView(50);
-
-    // Callback function for another view to refresh Ingredients
-    var refreshIngredients = function () {
-        var tableRow = prepTableRow(Ti.App.ingredientList);
-        ingredientTable.data = tableRow;
-        console.info("Init'd " + ingredientTable.data);
-        ingredientTable.addEventListener('click', function (e) {
-            tableRow[e.index].hasCheck = !tableRow[e.index].hasCheck;
-            console.info("Index is " + e.index + " title is " + tableRow[e.index].title);
-        });
-    };
-    refreshIngredients();
-    ingredientView.add(ingredientTable);
-
-    console.log("tableview length is " + ingredientTable.data.length);
-    for (var i = 0; i < ingredientTable.data.length; i++) {
-        console.log("tableview variable is " + ingredientTable.data[i].title);
-    }
-
-    var ingredientsButton = constructButton(260, 'Edit Ingredients');
-
-    //Add callback for creating ingredient edit view
-    ingredientsButton.addEventListener('click', function (e) {
-        var window = Ti.UI.createWindow({
-            fullscreen: true,
-            url: 'settings.js'
-        });
-        window.title = 'Random Munchies';
-        window.refreshIngredients = refreshIngredients;
-        window.open();
-    });
-
-    ingredientView.add(ingredientsButton);
-
-    return ingredientView;
-}
+//Helper functions
 
 function getCurrentCoordinates() {
     //Set Brisbane lat and long
@@ -84,7 +23,6 @@ function getCurrentCoordinates() {
     if (Ti.Network.online) {
         Ti.Geolocation.purpose = "Receive User Location";
         Titanium.Geolocation.getCurrentPosition(function (e) {
-
             if (!e.success || e.error) {
                 console.log('Could not find the device location');
                 console.log("Defaulting latitude: " + latitude + " and longitude: " + longitude);
@@ -93,29 +31,27 @@ function getCurrentCoordinates() {
             longitude = e.coords.longitude;
             latitude = e.coords.latitude;
 
-            console.log("Found latitude: " + latitude + " and longitude: " + longitude);
-
         });
     } else {
         console.log("Internet connection is required for geolocation");
         console.log("Defaulting latitude: " + latitude + " and longitude: " + longitude);
     }
-
-    console.log("Returning latitude: " + latitude + " and longitude: " + longitude);
+    currLat = latitude;
+    currLong = longitude;
     return {latitude: latitude, longitude: longitude};
 
 }
 
-var eateries = [];
-
 function eateryInfoParse(eatery) {
     var ratingStr = eatery.user_rating.aggregate_rating + '/5';
     var avgCostStr = eatery.currency + eatery.average_cost_for_two / 2 + ' per person';
+    var distanceStr = distance(currLat, currLong, eatery.location.latitude, eatery.location.longitude) + ' km';
+
     var retVal = {
         id: eatery.id,
         name: eatery.name,
         address: eatery.location.address,
-        distance: eatery.location.latitude,
+        distance: distanceStr,
         cuisines: eatery.cuisines,
         rating: ratingStr,
         cost: avgCostStr
@@ -226,7 +162,7 @@ function displayEatery(mainWin, baseTop, purpose, eatery) {
     mainWin.add(win);
 
     if (purpose == 'feedbackLike' || purpose == 'feedbackDislike') {
-    setTryAgainButton(mainWin);
+        setTryAgainButton(mainWin);
     }
 }
 
@@ -377,6 +313,7 @@ function setTryAgainButton(win) {
         setContentFromGpsAndZomato(win);
     });
 }
+
 
 function setContentFromGpsAndZomato(mainWin) {
     mainWin.removeAllChildren();
