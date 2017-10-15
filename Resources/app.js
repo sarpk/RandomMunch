@@ -157,15 +157,30 @@ function displayEatery(mainWin, baseTop, purpose, eatery) {
         setFeedbackButtons(eatery, win, baseTop + 240);
     }
 
+    if (purpose == 'feedbackLike' || purpose == 'feedbackDislike') {
+        setPickAnother(mainWin, win, baseTop + 240);
+    }
+
     mainWin.removeAllChildren(); //Unfortunately works really slow due to https://jira.appcelerator.org/browse/TIMOB-23447
 
     mainWin.add(win);
 
-    if (purpose == 'feedbackLike' || purpose == 'feedbackDislike') {
-        setTryAgainButton(mainWin);
-    }
 }
 
+function setPickAnother(mainWin, win, topVal) {
+    finishedBut = Titanium.UI.createButton({
+        title: 'Pick Another Eatery',
+        height: 'auto',
+        width: 'auto',
+        textAlign: 'center',
+        top: topVal
+    });
+    win.add(finishedBut);
+    //Just refresh the content
+    finishedBut.addEventListener('click', function (e) {
+        setContentFromGpsAndZomato(mainWin);
+    });
+}
 
 function setFeedbackButtons(eatery, win, topVal) {
     likeBut = Titanium.UI.createButton({
