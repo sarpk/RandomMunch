@@ -64,7 +64,7 @@ function handleEatery(win) {
         console.log("No eatery found");
         win.removeAllChildren();
         win.add(constructLabel(10, 'Could not find any eatery :(', 'center'));
-        setTryAgainButton(win);
+        setTryAgainButton(win, 40);
         return;
     }
     var eatery = eateryInfoParse(eateries[0].restaurant);
@@ -314,13 +314,13 @@ function addNotification(eateryInfo) {
     Ti.Android.startService(intent);
 }
 
-function setTryAgainButton(win) {
+function setTryAgainButton(win, topVal) {
     finishedBut = Titanium.UI.createButton({
         title: 'Try Again',
         height: 'auto',
         width: 'auto',
         textAlign: 'center',
-        top: '80%'
+        top: topVal
     });
     win.add(finishedBut);
     //Just refresh the content
@@ -333,7 +333,7 @@ function setTryAgainButton(win) {
 function setContentFromGpsAndZomato(mainWin) {
     mainWin.removeAllChildren();
     mainWin.add(constructLabel(40, 'Please wait while finding new eateries', 'center'));
-    setTryAgainButton(mainWin);
+    setTryAgainButton(mainWin, 70);
     var coords = getCurrentCoordinates();
     console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
     getRestaurants(coords.latitude, coords.longitude, mainWin);
