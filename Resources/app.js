@@ -241,6 +241,12 @@ function setLikeButtons(win, topVal) {
 
 }
 
+function setContentFromGpsAndZomato(mainWin) {
+    var coords = getCurrentCoordinates();
+    console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
+    getRestaurants(coords.latitude, coords.longitude, mainWin);
+}
+
 //End of Helper Function
 
 
@@ -248,7 +254,6 @@ function constructMainView(_args) {
     var mainWin = Titanium.UI.createWindow({
         title: _args.title
     });
-
 
     mainWin.activity.onCreateOptionsMenu = function (e) {
         var menu = e.menu;
@@ -264,6 +269,8 @@ function constructMainView(_args) {
                 url: 'edit_ingredients.js'
             });
             window.title = 'Random Munchies';
+            window.resetParentContent = setContentFromGpsAndZomato;
+            window.parentWin = mainWin;
             window.open();
         });
     };
@@ -279,10 +286,8 @@ function constructMainView(_args) {
     scrollView.add(addOpenCategoryDialog(constructButton(510, 'Select a Category')));
 
     scrollView.add(createSelectIngredientsView());
-    var coords = getCurrentCoordinates();
-    console.log("Coords latitude: " + coords.latitude + " and longitude: " + coords.longitude);
-    getRestaurants(coords.latitude, coords.longitude, mainWin);
 
+    setContentFromGpsAndZomato(mainWin);
     addNotification();
 
     return mainWin;

@@ -45,7 +45,8 @@ function constructTextField(topVal, hintTextVal) {
         height: 'auto',
         width: 'auto',
         hintText: hintTextVal,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        textAlign: 'right',
+        keyboardType: Ti.UI.KEYBOARD_NUMBER_PAD,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
     });
@@ -134,7 +135,7 @@ function deleteFromList(list) {
     while (i--) {
         if (list[i].hasCheck) {
             console.info("Index " + i + " deleting " + list[i].name + " with id " + list[i].id);
-deleteDislikedRestaurant(list[i].id);
+            deleteDislikedRestaurant(list[i].id);
             list.splice(i, 1);
         }
     }

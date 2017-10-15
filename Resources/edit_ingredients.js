@@ -2,54 +2,51 @@ Ti.include('common.js');
 Ti.include('db.js');
 
 
-function edit_ingredients() {
+function settings() {
     var currentWin = Titanium.UI.currentWindow;
 
     currentWin.add(constructLabel(10, 'Remove Disliked Eateries:', 'center'));
 
-    var ingredientTableView = constructTableView(50);
+    var eateriesTableView = constructTableView(50);
     var tableRow = prepTableRowWithMap(getDislikedRestaurants());
-    ingredientTableView.data = tableRow;
+    eateriesTableView.data = tableRow;
     //Add callback for choosing the items
-    ingredientTableView.addEventListener('click', function (e) {
+    eateriesTableView.addEventListener('click', function (e) {
         tableRow[e.index].hasCheck = !tableRow[e.index].hasCheck;
         console.info("Index is " + e.index + " id is " + tableRow[e.index].id + " name is " + tableRow[e.index].name);
     });
-    currentWin.add(ingredientTableView);
+    currentWin.add(eateriesTableView);
 
-    var deleteItemBut = constructButton(270, 'Delete Selected Items');
+    var deleteItemBut = constructButton(270, 'Delete Selected Eateries');
     //Add callback for deleting from list
     deleteItemBut.addEventListener('click', function (e) {
         console.info("Size before is " + tableRow.length);
         deleteFromList(tableRow);
         console.info("Size after is " + tableRow.length);
-        ingredientTableView.data = tableRow;
+        eateriesTableView.data = tableRow;
     });
     currentWin.add(deleteItemBut);
 
-    var newIngredientTxt = constructTextField(320, 'Add New Ingredient');
-    currentWin.add(newIngredientTxt);
-    //Add callback for adding a new ingredient to list
-    newIngredientTxt.addEventListener('return', function (e) {
-        console.info("Size before is " + tableRow.length);
-        addStringToTableRow(tableRow, e.value);
-        console.info("Size after is " + tableRow.length);
-        ingredientTableView.data = tableRow;
-        newIngredientTxt.blur();
+    currentWin.add(constructLabel(320, 'Notification Seconds (ie 3600 is 1 hour):', 'left'));
+    var notifSecsTxtField = constructTextField(320, getNotificationSecond());
+    currentWin.add(notifSecsTxtField);
+    //Add callback for setting db value
+    notifSecsTxtField.addEventListener('return', function (e) {
+        console.info("Setting second value in database " + e.value);
+        updateNotificationSecond(e.value);
     });
 
     finishedBut = Titanium.UI.createButton({
         title: 'Finished',
         height: 'auto',
         width: 'auto',
-        left: 10,
+        textAlign: 'center',
         bottom: 10
     });
     currentWin.add(finishedBut);
     //Callback for swapping the current view with global and refreshing main view
     finishedBut.addEventListener('click', function (e) {
-        Ti.App.ingredientList = tableRowToMap(tableRow);
-        currentWin.refreshIngredients();
+        currentWin.resetParentContent(currentWin.parentWin);
         currentWin.close();
     });
 
@@ -69,5 +66,5 @@ function edit_ingredients() {
     return currentWin;
 }
 
-edit_ingredients();
+settings();
 
