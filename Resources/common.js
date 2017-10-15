@@ -131,7 +131,7 @@ function deleteFromList(list) {
     var i = list.length;
     while (i--) {
         if (list[i].hasCheck) {
-            console.info("Index " + i + " deleting " + list[i].title);
+            console.info("Index " + i + " deleting " + list[i].name + " with id " + list[i].id);
             list.splice(i, 1);
         }
     }
