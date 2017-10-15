@@ -304,7 +304,7 @@ function getRestaurants(lat, lon, currWin) {
 
 function addNotification(eateryInfo) {
     var intent = Ti.Android.createServiceIntent({
-        url: 'ExampleService.js'
+        url: 'FeedbackService.js'
     });
     intent.putExtra('title', 'Eatery Feedback');
     intent.putExtra('message', 'Did you enjoy your food?');
