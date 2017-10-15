@@ -220,29 +220,16 @@ function displayEatery(mainWin, baseTop, purpose, eatery) {
     if (purpose == 'feedback') {
         setFeedbackButtons(eatery, win, baseTop + 240);
     }
-    if (purpose == 'feedbackLike' || purpose == 'feedbackDislike') {
-        setPickAnother(win, mainWin);
-    }
 
     mainWin.removeAllChildren(); //Unfortunately works really slow due to https://jira.appcelerator.org/browse/TIMOB-23447
 
     mainWin.add(win);
+
+    if (purpose == 'feedbackLike' || purpose == 'feedbackDislike') {
+    setTryAgainButton(mainWin);
+    }
 }
 
-function setPickAnother(win, mainWin) {
-    finishedBut = Titanium.UI.createButton({
-        title: 'Pick Another Eatery',
-        height: 'auto',
-        width: 'auto',
-        textAlign: 'center',
-        bottom: 20
-    });
-    win.add(finishedBut);
-    //Just refresh the content
-    finishedBut.addEventListener('click', function (e) {
-        setContentFromGpsAndZomato(mainWin);
-    });
-}
 
 function setFeedbackButtons(eatery, win, topVal) {
     likeBut = Titanium.UI.createButton({
@@ -382,7 +369,7 @@ function setTryAgainButton(win) {
         height: 'auto',
         width: 'auto',
         textAlign: 'center',
-        bottom: 20
+        top: '80%'
     });
     win.add(finishedBut);
     //Just refresh the content
@@ -392,6 +379,7 @@ function setTryAgainButton(win) {
 }
 
 function setContentFromGpsAndZomato(mainWin) {
+    mainWin.removeAllChildren();
     mainWin.add(constructLabel(40, 'Please wait while finding new eateries', 'center'));
     setTryAgainButton(mainWin);
     var coords = getCurrentCoordinates();
@@ -426,16 +414,6 @@ function constructMainView(_args) {
             window.open();
         });
     };
-
-    var scrollView = constructScrollView(200);
-
-    mainWin.add(scrollView);
-
-    scrollView.add(constructTextField(470, 'Recipe Name'));
-
-    scrollView.add(addOpenCategoryDialog(constructButton(510, 'Select a Category')));
-
-    scrollView.add(createSelectIngredientsView());
 
     setContentFromGpsAndZomato(mainWin);
 
